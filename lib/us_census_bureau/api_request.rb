@@ -20,27 +20,33 @@ module UsCensusBureau
 		end
 
 		def request
-			puts "REQUESTING!!"
 			res = Net::HTTP.get_response(uri)
 			if res.is_a?(Net::HTTPSuccess)
 				@response = JSON.parse(res.body)
 			else
-				raise res.body
+				raise Error res
 			end
 		end
 
 		def options_to_params(options)
+			validate_options(options)
 			if options[:variables] == true
-				if options.size > 1
-					raise "You have incorrectly specified options! #{options}"
-				else
-					"/variables"
-				end
+				"/variables"
 			else
 				opts_with_key = options.merge('key' => @api_key)
-				'?' + opts_with_key.map { |k,v| "#{k}=#{v}" }.join("&") unless options.empty?
+				'?' + URI.encode_www_form(opts_with_key) unless options.empty?
 			end
 		end
+
+		private
+
+			def validate_options(options)
+				if options[:variables] == true
+					raise "You have incorrectly specified options! #{options}" if options.size > 1
+				elsif options[:get].present? && options[:for].nil?
+					raise "You must also specify a 'for' argument when using 'get'"
+				end
+			end
 
 	end
 end

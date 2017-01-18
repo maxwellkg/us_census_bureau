@@ -1,7 +1,10 @@
 module UsCensusBureau
 	class Dataset
-    class << self; attr_reader :id, :available_years end
-    class << self; attr_accessor :variables end
+
+    class << self
+      attr_reader :id, :available_years
+      attr_accessor :variables
+    end
 
 		def self.where(options)
 			vintage = options.delete(:vintage)
@@ -23,6 +26,7 @@ module UsCensusBureau
     private
 
       def self.get_variables(year)
+        validate_year(year)
         begin
           ApiRequest.new(vintage: year, dataset: @id, options: {variables: true} ).request
         rescue
