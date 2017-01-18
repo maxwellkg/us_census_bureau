@@ -1,6 +1,7 @@
 module UsCensusBureau
 	class Dataset
     class << self; attr_reader :id, :available_years end
+    class << self; attr_accessor :variables end
 
 		def self.where(options)
 			vintage = options.delete(:vintage)
@@ -13,6 +14,21 @@ module UsCensusBureau
         raise "#{year} is not a valid year. Valid years for #{self} are: #{@available_years.join(', ')}"
       end
     end
+
+    def self.variables(year)
+      @variables ||= {}
+      @variables[year] ||= get_variables(year)
+    end
+
+    private
+
+      def self.get_variables(year)
+        begin
+          ApiRequest.new(vintage: year, dataset: @id, options: {variables: true} ).request
+        rescue
+          "No variables are available for this data set"
+        end
+      end
 
 	end
 end

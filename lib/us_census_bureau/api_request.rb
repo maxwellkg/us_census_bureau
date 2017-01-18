@@ -16,11 +16,11 @@ module UsCensusBureau
 		end
 
 		def uri
-			opts_with_key = options.merge('key' => @api_key)
-			URI("#{BASE}/#{vintage}/#{dataset}#{options_to_params(opts_with_key)}")
+			URI("#{BASE}/#{vintage}/#{dataset}#{options_to_params(options)}")
 		end
 
 		def request
+			puts "REQUESTING!!"
 			res = Net::HTTP.get_response(uri)
 			if res.is_a?(Net::HTTPSuccess)
 				@response = JSON.parse(res.body)
@@ -30,7 +30,16 @@ module UsCensusBureau
 		end
 
 		def options_to_params(options)
-			'?' + options.map { |k,v| "#{k}=#{v}" }.join("&") unless options.empty?
+			if options[:variables] == true
+				if options.size > 1
+					raise "You have incorrectly specified options! #{options}"
+				else
+					"/variables"
+				end
+			else
+				opts_with_key = options.merge('key' => @api_key)
+				'?' + opts_with_key.map { |k,v| "#{k}=#{v}" }.join("&") unless options.empty?
+			end
 		end
 
 	end
