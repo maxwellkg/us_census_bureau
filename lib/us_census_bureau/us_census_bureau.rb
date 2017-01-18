@@ -1,3 +1,5 @@
 require 'api_request.rb'
 require 'dataset.rb'
 require 'decennial_census.rb'
+require 'economic_census.rb'
+require 'query.rb'
