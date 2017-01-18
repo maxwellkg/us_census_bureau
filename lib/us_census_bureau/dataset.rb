@@ -1,5 +1,6 @@
 module UsCensusBureau
 	class Dataset
+    extend QueryMethods
 
     class << self
       attr_reader :id, :available_years
@@ -21,6 +22,11 @@ module UsCensusBureau
     def self.variables(year)
       @variables ||= {}
       @variables[year] ||= get_variables(year)
+    end
+
+    def initialize(attrs)
+      headers = attrs.first
+
     end
 
     private
